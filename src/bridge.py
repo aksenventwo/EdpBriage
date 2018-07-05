@@ -12,10 +12,12 @@ class Bridge(object):
     def __init__(self):
 
         #intialize the players
-        self.players = [Player(n) for n in ['N', 'E', 'S', 'W']]
+        self.players = {n: Player(n, n) for n in ['N', 'E', 'S', 'W']}
 
         #initialize the deck
         self.deck = Deck()
+
+        self.playing = None
 
         #deal out the cards
         for rnd in range(13):
@@ -23,45 +25,52 @@ class Bridge(object):
                 card = self.deck.deal()
                 player.recv(card)
 
+    def _get_winner(self, suit):
+        if len(cards) != 4:
+            raise ValueError("The calculated card should be 4.")
+        # TODO(zou): calc who winn
+        win_player = None
+        for player in _get_players(self.playing.pos)
+            if win_player is None:
+                win_player = player
+            win_player = self._compare(win_player, player, suit)
+        return win_player
 
-    def check_trick(self, trick):
-        win = trick[0]
-        lead_suit = trick[0].suit
+    def _compare(self, player_a, player_b, suit):
+        # TODO(zou): Calculate the card size of two players
+        pass
 
-        for card in trick[1:]:
-            print card.value, win.value
-            if card.value > win.value:
-                win = card
-        return trick.index(win)
+
+    def _get_players(self, start):
+        if start == 'N':
+            return [self.players['N'], self.players['E'], self.players['S'], self.players['W']]
+        elif start == 'E':
+            return [self.players['E'], self.players['S'], self.players['W'], self.players['N']]
+        elif start == 'S':
+            return [self.players['S'], self.players['W'], self.players['N'], self.players['E']]
+        elif start == 'W':
+            return [self.players['W'], self.players['N'], self.players['E'], self.players['S']]
+        else:
+            raise ValueError("Error start, %s" % start)
 
     def play(self):
-        start = 0
+        start = 'N'
+        suit = None
         for rnd in range(13):
-            suit = None
-            trick = []
-            #新的一轮都要更新出牌人
-            for player in circleList(self.players, start):
-                #出牌
-                print '%s play:' % player.name
-                card = player.pick(suit)
-                trick.append(card)
-                #if its the first player
-                if suit is None:
-                    suit = card.suit     #update the suit
-            #赢的一方作为出牌人
-            start = self.check_trick(trick)
-            #统计玩家赢的墩数
-            self.players[start].piers_num += 1
-
-        for p in self.players:
-            print p.piers_num
-
-def main():
-    bridge = Bridge()
-    bridge.play()
+            players = _get_player(start)
+            self.playing = players[0]
+            for player in players:
+                player.pick(suit)
+                print('%s play: %s' % player.name, player.card())
+        
+            win_player = self._get_winner()
+            start = win_player.pos
+            suit = win_player.card.suit
+           
 
 if __name__=='__main__':
-    main()
+    bridge = Bridge()
+    bridge.play()
 
 
 

@@ -2,7 +2,7 @@
 
 #扑克牌对象，抽象出牌这种结构。
 #它可以表示一张牌
-
+import logging
 from .errors import (CardAppendError, CardSpilloverError,
                     CardRankError, CardSuitError)
 
@@ -15,6 +15,7 @@ class Card(object):
     rank_val = {'J': 11, 'Q': 12, 'K': 13, 'A': 14}
 
     def __init__(self, rank, suit):
+        self._logger = logging.getLogger('EdpBriage.Card')
         self.rank = self.check_rank(rank)
         self.suit = self.check_suit(suit)
 
@@ -28,6 +29,8 @@ class Card(object):
 
     def check_rank(self, rank):
         if rank not in '2 3 4 5 6 7 8 9 10 J Q K A'.split(' '):
+            self._logger.error('The value of the card should be in the range of \
+                                "2 3 4 5 6 7 8 9 10 J Q K A".')
             raise CardRankError
         return rank
 
